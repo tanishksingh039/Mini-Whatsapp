@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 30px;
+        }
+
+        .chat-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .chats-section {
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            background-color: #f8fafc;
+        }
+
+        .chat-message {
+            background-color: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #764ba2;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .message-meta {
+            display: flex;
+            gap: 20px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .message-content {
+            color: #2d3748;
+            font-size: 1.1em;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+
+        .chat-form {
+            background-color: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1.2em;
+            transition: transform 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .timestamp {
+            font-size: 0.85em;
+            color: #718096;
+            margin-top: 8px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-container">
+            <h1>💬 Chat Messages</h1>
+            
+            <div class="chats-section">
+                <% chats.forEach(chat => { %>
+                    <div class="chat-message">
+                        <div class="message-header">
+                            <div class="message-meta">
+                                <span>From: <%= chat.from %></span>
+                                <span>To: <%= chat.to %></span>
+                            </div>
+                            <form action="/chats/delete" method="POST" class="delete-form">
+                                <input type="hidden" name="message" value="<%= chat.message %>">
+                                <input type="hidden" name="createdAt" value="<%= chat.createdAt.toISOString() %>">
+                                <button type="submit" class="delete-btn" 
+                                    onclick="return confirm('Are you sure you want to delete this message?')">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
+                        <p class="message-content"><%= chat.message %></p>
+                        <span class="timestamp">
+                            🕒 <%= chat.createdAt.toLocaleDateString() %> 
+                            <%= chat.createdAt.toLocaleTimeString() %>
+                        </span>
+                    </div>
+                <% }) %>
+            </div>
+
+            <div class="chat-form">
+                <h2>✉️ New Message</h2>
+                <form action="/chats" method="POST">
+                    <div class="form-group">
+                        <label for="from">From:</label>
+                        <input type="text" id="from" name="from" required 
+                            placeholder="Enter sender's name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="to">To:</label>
+                        <input type="text" id="to" name="to" required 
+                            placeholder="Enter recipient's name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <textarea id="message" name="message" maxlength="50" required 
+                            placeholder="Type your message here..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Send Message 📤</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
